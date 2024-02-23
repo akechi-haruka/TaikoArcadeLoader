@@ -12,6 +12,7 @@ char accessCode2[21] = "00000000000000000002";
 char chipId1[33]     = "00000000000000000000000000000001";
 char chipId2[33]     = "00000000000000000000000000000002";
 char *server         = "127.0.0.1";
+char *keychipId         = "284111081234";
 
 typedef i32 (*callbackAttach) (i32, i32, i32 *);
 typedef void (*callbackTouch) (i32, i32, u8[168], u64);
@@ -206,6 +207,11 @@ HOOK_DYNAMIC (i32, __stdcall, ws2_getaddrinfo, char *node, char *service, void *
 	return originalws2_getaddrinfo (server, service, hints, out);
 }
 
+HOOK_DYNAMIC (i64, __fastcall, UsbFinderGetSerialNumber, i32 a1, char *a2) {
+	strcpy (a2, keychipId);
+	return 0;
+}
+
 u32 inline generate_rand () { return rand () + rand () * rand () + rand (); }
 
 i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
@@ -217,6 +223,8 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	INSTALL_HOOK_DYNAMIC (bngrw_attach, PROC_ADDRESS ("bngrw.dll", "BngRwAttach"));
 	INSTALL_HOOK_DYNAMIC (bngrw_reqWaitTouch, PROC_ADDRESS ("bngrw.dll", "BngRwReqWaitTouch"));
 	INSTALL_HOOK_DYNAMIC (bngrw_Init, PROC_ADDRESS ("bngrw.dll", "BngRwInit"));
+
+	INSTALL_HOOK_DYNAMIC (UsbFinderGetSerialNumber, PROC_ADDRESS ("nbamUsbFinder.dll", "nbamUsbFinderGetSerialNumber"));
 
 	INSTALL_HOOK_DYNAMIC (ws2_getaddrinfo, PROC_ADDRESS ("ws2_32.dll", "getaddrinfo"));
 
@@ -256,9 +264,10 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 
 	toml_table_t *config = openConfig (configPath ("config.toml"));
 	if (config) {
-		drumMax = readConfigInt (config, "drumMax", drumMax);
-		drumMin = readConfigInt (config, "drumMin", drumMin);
-		server  = readConfigString (config, "server", server);
+		drumMax   = readConfigInt (config, "drumMax", drumMax);
+		drumMin   = readConfigInt (config, "drumMin", drumMin);
+		server    = readConfigString (config, "server", server);
+		keychipId = readConfigString (config, "keychipId", keychipId);
 		toml_free (config);
 	}
 

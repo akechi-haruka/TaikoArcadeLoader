@@ -56,10 +56,6 @@ RETURN_FALSE (i64, __stdcall, bnusio_ResetCoin);
 RETURN_FALSE (i64, __fastcall, bnusio_DecCoin, i32 a1, u16 a2);
 HOOK_DYNAMIC (i64, __stdcall, UsbFinderInitialize) { return 0; }
 HOOK_DYNAMIC (i64, __stdcall, UsbFinderRelease) { return 0; }
-HOOK_DYNAMIC (i64, __fastcall, UsbFinderGetSerialNumber, i32 a1, char *a2) {
-	strcpy (a2, "284111080001");
-	return 0;
-}
 HOOK_DYNAMIC (u64, __stdcall, bngrw_DevReset) { return 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReadMifare) { return 0xFFFFFF9C; }
 HOOK_DYNAMIC (void, __stdcall, bngrw_fin) { return; }
@@ -92,7 +88,6 @@ init_boilerplate () {
 
 	INSTALL_HOOK_DYNAMIC (UsbFinderInitialize, PROC_ADDRESS ("nbamUsbFinder.dll", "nbamUsbFinderInitialize"));
 	INSTALL_HOOK_DYNAMIC (UsbFinderRelease, PROC_ADDRESS ("nbamUsbFinder.dll", "nbamUsbFinderRelease"));
-	INSTALL_HOOK_DYNAMIC (UsbFinderGetSerialNumber, PROC_ADDRESS ("nbamUsbFinder.dll", "nbamUsbFinderGetSerialNumber"));
 
 	INSTALL_HOOK_DYNAMIC (bngrw_DevReset, PROC_ADDRESS ("bngrw.dll", "BngRwDevReset"));
 	INSTALL_HOOK_DYNAMIC (bngrw_ReadMifare, PROC_ADDRESS ("bngrw.dll", "BngRwExReadMifareAllBlock"));
