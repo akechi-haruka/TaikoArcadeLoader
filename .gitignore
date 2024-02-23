@@ -4,3 +4,5 @@ x86_64-pc-windows
 *.7z
 .cache
 compile_commands.json
+.idea
+*.iml
